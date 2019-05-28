@@ -77,7 +77,7 @@ func Auth() gin.HandlerFunc {
 		session := sessions.Default(ctx)
 		retrievedState := session.Get("state")
 		if retrievedState != ctx.Query("state") {
-			ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s", retrievedState))
+			ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s, ctx state: %s", retrievedState, ctx.Query("state")))
 			return
 		}
 
@@ -94,5 +94,7 @@ func Auth() gin.HandlerFunc {
 		}
 		// save userinfo, which could be used in Handlers
 		ctx.Set("user", user)
+		session.Set("state", state)
+		session.Save()
 	}
 }
